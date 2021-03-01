@@ -24,6 +24,7 @@
 
 #import "ZFSliderView.h"
 #import "UIView+ZFFrame.h"
+#import "DGGUIKit.h"
 
 /** 滑块的大小 */
 static const CGFloat kSliderBtnWH = 19.0;
@@ -338,6 +339,9 @@ static const CGFloat kAnimate = 0.3;
 }
 
 - (void)sliderBtnTouchEnded:(UIButton *)btn {
+    if (self.disallowFastPlay && self.isForward) {
+        [TipTool showMasTip:@"不支持快进"];
+    }
     if ([self.delegate respondsToSelector:@selector(sliderTouchEnded:)]) {
         [self.delegate sliderTouchEnded:self.value];
     }
@@ -372,6 +376,7 @@ static const CGFloat kAnimate = 0.3;
     CGFloat value = (point.x - self.sliderBtn.zf_width * 0.5) * 1.0 / self.bgProgressView.zf_width;
     value = value >= 1.0 ? 1.0 : value <= 0 ? 0 : value;
     if (value >= self.value && self.disallowFastPlay) {
+        [TipTool showMasTip:@"不支持快进"];
         return;
     }
     self.value = value;
