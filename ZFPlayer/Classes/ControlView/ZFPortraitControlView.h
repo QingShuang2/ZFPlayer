@@ -73,9 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 全屏模式
 @property (nonatomic, assign) ZFFullScreenMode fullScreenMode;
 
-/// 不允许快进，默认NO
-@property (nonatomic, assign) BOOL disallowFastPlay;
-
 /// 重置控制层
 - (void)resetControlView;
 

@@ -113,6 +113,9 @@
 /// 全屏模式
 @property (nonatomic, assign) ZFFullScreenMode fullScreenMode;
 
+// 不允许快进，默认NO
+@property (nonatomic, assign) BOOL disallowFastPlay;
+
 /**
  设置标题、封面、全屏模式
 
