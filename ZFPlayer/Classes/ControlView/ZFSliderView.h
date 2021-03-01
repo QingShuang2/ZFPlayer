@@ -99,8 +99,8 @@
 
 @property (nonatomic, assign) CGSize thumbSize;
 
-///是否允许快进
-@property (nonatomic, assign) BOOL fastPlay;
+/// 不允许快进，默认NO
+@property (nonatomic, assign) BOOL disallowFastPlay;
 
 /**
  *  Starts animation of the spinner.
