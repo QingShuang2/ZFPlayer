@@ -36,6 +36,7 @@
 #else
 #import "ZFPlayerConst.h"
 #endif
+#import "DGGUIKit.h"
 
 
 @interface ZFPlayerControlView () <ZFSliderViewDelegate>
@@ -243,7 +244,7 @@
 }
 
 /// 音量改变的通知
-- (void)volumeChanged:(NSNotification *)notification {    
+- (void)volumeChanged:(NSNotification *)notification {
     NSDictionary *userInfo = notification.userInfo;
     NSString *reasonstr = userInfo[@"AVSystemController_AudioVolumeChangeReasonNotificationParameter"];
     if ([reasonstr isEqualToString:@"ExplicitVolumeChange"]) {
@@ -377,6 +378,12 @@
 /// 滑动中手势事件
 - (void)gestureChangedPan:(ZFPlayerGestureControl *)gestureControl panDirection:(ZFPanDirection)direction panLocation:(ZFPanLocation)location withVelocity:(CGPoint)velocity {
     if (direction == ZFPanDirectionH) {
+        BOOL style = NO;
+        if (velocity.x > 0) style = YES;
+        if (velocity.x < 0) style = NO;
+        if (self.disallowFastPlay && style) {
+            return;
+        }
         // 每次滑动需要叠加时间
         self.sumTime += velocity.x / 200;
         // 需要限定sumTime的范围
@@ -384,9 +391,6 @@
         if (totalMovieDuration == 0) return;
         if (self.sumTime > totalMovieDuration) self.sumTime = totalMovieDuration;
         if (self.sumTime < 0) self.sumTime = 0;
-        BOOL style = NO;
-        if (velocity.x > 0) style = YES;
-        if (velocity.x < 0) style = NO;
         if (velocity.x == 0) return;
         [self sliderValueChangingValue:self.sumTime/totalMovieDuration isForward:style];
     } else if (direction == ZFPanDirectionV) {
@@ -409,6 +413,9 @@
         [self.player seekToTime:self.sumTime completionHandler:^(BOOL finished) {
             if (finished) {
                 @zf_strongify(self)
+                if (self.disallowFastPlay && (gestureControl.panMovingDirection == ZFPanMovingDirectionRight)) {
+                    [TipTool showMasTip:@"不支持快进"];
+                }
                 /// 左右滑动调节播放进度
                 [self.portraitControlView sliderChangeEnded];
                 [self.landScapeControlView sliderChangeEnded];
@@ -577,8 +584,8 @@
     }
     
     self.fastProgressView.value = value;
-    self.fastView.hidden = NO;
-    self.fastView.alpha = 1;
+    self.fastView.hidden = self.disallowFastPlay;
+    self.fastView.alpha = !self.disallowFastPlay;
     if (forward) {
         self.fastImageView.image = ZFPlayer_Image(@"ZFPlayer_fast_forward");
     } else {
