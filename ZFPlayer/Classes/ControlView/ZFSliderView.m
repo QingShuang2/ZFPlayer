@@ -339,9 +339,6 @@ static const CGFloat kAnimate = 0.3;
 }
 
 - (void)sliderBtnTouchEnded:(UIButton *)btn {
-    if (self.disallowFastPlay && self.isForward) {
-        [TipTool showMasTip:@"不支持快进"];
-    }
     if ([self.delegate respondsToSelector:@selector(sliderTouchEnded:)]) {
         [self.delegate sliderTouchEnded:self.value];
     }
@@ -361,8 +358,8 @@ static const CGFloat kAnimate = 0.3;
     value = value >= 1.0 ? 1.0 : value <= 0.0 ? 0.0 : value;
     if (self.value == value) return;
     self.isForward = self.value < value;
-    if (self.isForward && self.disallowFastPlay) {
-        return;
+    if (self.isForward && self.disallowFastPlay && self.maxWatchtimeRate < value) {
+        value = self.maxWatchtimeRate;
     }
     self.value = value;
     if ([self.delegate respondsToSelector:@selector(sliderValueChanged:)]) {
@@ -375,9 +372,8 @@ static const CGFloat kAnimate = 0.3;
     // 获取进度
     CGFloat value = (point.x - self.sliderBtn.zf_width * 0.5) * 1.0 / self.bgProgressView.zf_width;
     value = value >= 1.0 ? 1.0 : value <= 0 ? 0 : value;
-    if (value >= self.value && self.disallowFastPlay) {
-        [TipTool showMasTip:@"不支持快进"];
-        return;
+    if (self.disallowFastPlay && self.maxWatchtimeRate < value) {
+        value = self.maxWatchtimeRate;
     }
     self.value = value;
     if ([self.delegate respondsToSelector:@selector(sliderTapped:)]) {

@@ -102,6 +102,11 @@
 /// 不允许快进，默认NO
 @property (nonatomic, assign) BOOL disallowFastPlay;
 
+/// 最大的快进时刻占比
+@property (nonatomic, assign) CGFloat maxWatchtimeRate;
+
+
+
 /**
  *  Starts animation of the spinner.
  */
