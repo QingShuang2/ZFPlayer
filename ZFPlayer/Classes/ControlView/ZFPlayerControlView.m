@@ -381,9 +381,6 @@
         BOOL style = NO;
         if (velocity.x > 0) style = YES;
         if (velocity.x < 0) style = NO;
-        if (self.disallowFastPlay && style) {
-            return;
-        }
         // 每次滑动需要叠加时间
         self.sumTime += velocity.x / 200;
         // 需要限定sumTime的范围
@@ -392,7 +389,12 @@
         if (self.sumTime > totalMovieDuration) self.sumTime = totalMovieDuration;
         if (self.sumTime < 0) self.sumTime = 0;
         if (velocity.x == 0) return;
-        [self sliderValueChangingValue:self.sumTime/totalMovieDuration isForward:style];
+        CGFloat value = self.sumTime/totalMovieDuration;
+        if (self.disallowFastPlay && style && value > self.maxWatchtimeRate) {
+            value = self.maxWatchtimeRate;
+            self.sumTime = totalMovieDuration * self.maxWatchtimeRate;
+        }
+        [self sliderValueChangingValue:value isForward:style];
     } else if (direction == ZFPanDirectionV) {
         if (location == ZFPanLocationLeft) { /// 调节亮度
             self.player.brightness -= (velocity.y) / 10000;
@@ -413,9 +415,6 @@
         [self.player seekToTime:self.sumTime completionHandler:^(BOOL finished) {
             if (finished) {
                 @zf_strongify(self)
-                if (self.disallowFastPlay && (gestureControl.panMovingDirection == ZFPanMovingDirectionRight)) {
-                    [TipTool showMasTip:@"不支持快进"];
-                }
                 /// 左右滑动调节播放进度
                 [self.portraitControlView sliderChangeEnded];
                 [self.landScapeControlView sliderChangeEnded];
