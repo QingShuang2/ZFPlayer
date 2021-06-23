@@ -24,7 +24,7 @@
 
 #import "ZFSliderView.h"
 #import "UIView+ZFFrame.h"
-#import "DGGUIKit.h"
+
 
 /** 滑块的大小 */
 static const CGFloat kSliderBtnWH = 19.0;

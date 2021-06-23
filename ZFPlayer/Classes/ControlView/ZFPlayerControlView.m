@@ -36,7 +36,7 @@
 #else
 #import "ZFPlayerConst.h"
 #endif
-#import "DGGUIKit.h"
+
 
 
 @interface ZFPlayerControlView () <ZFSliderViewDelegate>
